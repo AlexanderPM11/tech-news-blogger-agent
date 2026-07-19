@@ -42,9 +42,30 @@ class SimpleCrew:
             tiempo_str = f"{int(duracion)}s"
         
         # Retornar como JSON string inyectando la métrica de tiempo
+        import json
+        articulo_dict = None
+        
+        # 1. Intentar obtener desde resultado.json (puede ser dict o str)
         if resultado.json:
-            import json
-            articulo_dict = dict(resultado.json)
+            if isinstance(resultado.json, dict):
+                articulo_dict = resultado.json
+            elif isinstance(resultado.json, str):
+                try:
+                    articulo_dict = json.loads(resultado.json)
+                except Exception:
+                    pass
+
+        # 2. Si falló, intentar parsear desde el resultado crudo (raw)
+        if not isinstance(articulo_dict, dict) and resultado.raw:
+            try:
+                # Quitar posibles marcas de markdown del texto crudo antes de parsear
+                raw_clean = resultado.raw.replace("```json", "").replace("```", "").strip()
+                articulo_dict = json.loads(raw_clean)
+            except Exception:
+                pass
+
+        # 3. Si logramos obtener un diccionario, inyectamos la métrica y serializamos
+        if isinstance(articulo_dict, dict):
             articulo_dict["tiempo_ejecucion"] = tiempo_str
             return json.dumps(articulo_dict, ensure_ascii=False)
             
