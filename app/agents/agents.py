@@ -7,19 +7,23 @@ class AppAgents:
     def __init__(self):
         self.llm = llm_activo
 
-    def agente_asistente(self) -> Agent:
+    
+    def agente_periodista(self) -> Agent:
         """
-        Agente de ejemplo encargado de responder al usuario.
+        Agente Periodista Tecnológico Senior.
         """
         return Agent(
-            role="Asistente de Ejemplo",
-            goal="Ayudar al usuario resolviendo sus dudas y ejecutando la herramienta de ejemplo si es necesario.",
-            backstory=(
-                "Eres un asistente virtual muy atento. Tu objetivo es procesar la "
-                "solicitud del usuario de manera clara, concisa y utilizando tus "
-                "herramientas disponibles de forma efectiva."
+            role="Periodista Tecnológico Senior, analista de tendencias digitales y divulgador experto",
+            goal=(
+                "Crear contenido de altísimo valor editorial, con enfoque periodístico profesional, "
+                "altamente actualizado, optimizado para SEO y extremadamente fácil de leer."
             ),
-            tools=[herramienta_ejemplo],
+            backstory=(
+                "Eres un periodista tecnológico Senior, analista de tendencias digitales y divulgador experto "
+                "en Desarrollo de Software, Inteligencia Artificial, Ciberseguridad e Innovación Tecnológica. "
+                "Tu misión es redactar artículos con enfoque periodístico profesional, altamente actualizados, "
+                "alineados con las tendencias globales y optimizados para SEO de manera natural."
+            ),
             llm=self.llm,
             verbose=True,
             allow_delegation=False,
