@@ -1,39 +1,39 @@
 from app.crews.crew import SimpleCrew
 
-def iniciar_chat_interactivo():
+def iniciar_investigador_interactivo():
     print("="*60)
-    print(" 🚀 INICIANDO MODO CHAT INTERACTIVO - DEPURADOR DE AGENTES (SIMPLE)")
+    print(" 🚀 INICIANDO AGENTE INVESTIGADOR DE TECNOLOGÍA (CLI)")
     print("    (Escribe 'salir', 'exit' o 'quit' para terminar)")
     print("="*60)
 
-    # 1. Instanciamos la tripulación simple
+    # 1. Instanciamos la tripulación
     crew = SimpleCrew()
     
-    # 2. Bucle del chat de consola
+    # 2. Bucle del investigador de consola
     while True:
         try:
-            mensaje_usuario = input("\n🧑 Usuario: ")
+            tema_investigacion = input("\n📝 Tema a investigar: ")
         except (KeyboardInterrupt, EOFError):
-            print("\n[👋] Apagando el chat interactivo. ¡Hasta luego!")
+            print("\n[👋] Apagando el investigador tecnológico. ¡Hasta luego!")
             break
             
-        if mensaje_usuario.lower().strip() in ['salir', 'exit', 'quit']:
-            print("\n[👋] Apagando el chat interactivo. ¡Hasta luego!")
+        if tema_investigacion.lower().strip() in ['salir', 'exit', 'quit']:
+            print("\n[👋] Apagando el investigador tecnológico. ¡Hasta luego!")
             break
 
-        if not mensaje_usuario.strip():
+        if not tema_investigacion.strip():
             continue
 
-        print("\n🤖 Procesando solicitud (Por favor espera)...\n")
+        print("\n🔍 Investigando y redactando contenido (Por favor espera)...\n")
         
-        # Enviamos el mensaje al agente de la tripulación simple
-        respuesta = crew.procesar_solicitud(mensaje_usuario)
+        # Enviamos el tema al agente
+        respuesta = crew.procesar_solicitud(tema_investigacion)
         
         # Imprimir respuesta en consola
         print("\n========================================")
-        print("          RESPUESTA DEL ASISTENTE       ")
+        print("         ARTÍCULO / INVESTIGACIÓN       ")
         print("========================================")
-        print(f"🤖 Asistente: {respuesta}\n")
+        print(f"🤖 Resultado:\n{respuesta}\n")
 
 if __name__ == "__main__":
-    iniciar_chat_interactivo()
+    iniciar_investigador_interactivo()

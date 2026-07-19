@@ -1,13 +1,15 @@
-# Plantilla de Agentes CrewAI con FastAPI para Creación de Contenido
+# Plantilla de Agente Investigador de Tecnología con FastAPI
 
-Esta plantilla proporciona una estructura de carpetas limpia, desacoplada y lista para clonar y desarrollar proyectos inteligentes con **CrewAI** y **FastAPI**. Está configurada específicamente para funcionar como un generador automatizado de artículos de noticias y tendencias tecnológicas con salida JSON de estructura garantizada.
+Esta plantilla proporciona una estructura modular, desacoplada y limpia para un **Agente Investigador de Tecnología** automatizado basado en **CrewAI** y **FastAPI**. 
+
+El agente está diseñado para recibir un tema o palabra clave de tecnología, investigar y redactar artículos técnicos de alta calidad con salida JSON estructurada y pulida por un editor humano. Adicionalmente, cuenta con un filtro para rechazar solicitudes que no pertenezcan al ámbito tecnológico e informático.
 
 ## Características Principales
 
 - **Flujo Especializado de Doble Agente**:
-  - **Periodista Investigador (`agente_periodista`)**: Investiga las tendencias y noticias tecnológicas más recientes de este año (2026), selecciona categorías y crea borradores en formato HTML.
+  - **Periodista Investigador (`agente_periodista`)**: Evalúa si el tema propuesto es de tecnología/informática. Si lo es, investiga las tendencias más recientes de este año (2026), selecciona categorías del blog de WordPress y crea un borrador inicial en HTML. Si el tema no es de tecnología, detiene la ejecución y genera una respuesta de rechazo estructurada.
   - **Editor Jefe y Humanizador (`agente_editor`)**: Pule el borrador, elimina modismos y clichés de IA ("En conclusión", "Es crucial", etc.), optimiza el SEO y reescribe el texto para que tenga un tono cercano, natural y de autoría humana propia.
-- **Salida JSON Estructurada Garantizada**: Utiliza validación estricta con Pydantic (`ArticuloBlogger`) garantizando que la salida sea un objeto JSON parseable sin markdown sobrante.
+- **Salida JSON Estructurada Garantizada**: Utiliza validación estricta con Pydantic (`ArticuloBlogger`) garantizando que la salida sea un objeto JSON parseable.
 - **Configuración Dinámica de LLMs**: Soporte integrado para OpenAI, Google Gemini, NVIDIA NIM y Ollama (local).
 - **Entrada Doble**:
   - Interfaz de consola interactiva (CLI) para pruebas y depuración local rápida (`main.py`).
@@ -27,6 +29,10 @@ tech-news-blogger-agent/
 │   │   └── llm_setup.py        # Inicialización del LLM activo (Ollama, OpenAI, Gemini, Nvidia)
 │   ├── crews/
 │   │   └── crew.py             # Clase orquestadora SimpleCrew (conecta agentes y tareas secuencialmente)
+│   ├── models/
+│   │   └── articulo.py         # Definición del esquema de datos Pydantic (ArticuloBlogger)
+│   ├── services/
+│   │   └── wordpress.py        # Consulta dinámica de categorías a la API REST de WordPress
 │   ├── tasks/
 │   │   └── tasks.py            # Definición de Tareas (Investigar/Redactar y Humanizar/Formatear)
 │   └── tools/
@@ -81,7 +87,7 @@ Ideal para verificar el comportamiento de tus agentes y la interacción entre el
 ```bash
 python main.py
 ```
-Introduce un tema para el artículo (ej: *"El impacto de la inteligencia artificial en el desarrollo web en 2026"*) y observa el flujo de trabajo de investigación y edición.
+Introduce un tema para el artículo (ej: *"Arquitectura de microservicios en 2026"* o un tema no tecnológico para verificar el rechazo) y observa el flujo de trabajo de investigación y edición.
 
 ### Modo API (FastAPI)
 Ejecuta el servidor web local:
@@ -97,7 +103,7 @@ La interfaz interactiva de Swagger UI para probar los endpoints se encuentra en 
 
 Para solicitar la generación de un artículo, realiza una petición POST a:
 ```text
-POST /chat
+POST /investigar
 ```
 
 ### Headers Requeridos:
@@ -109,13 +115,22 @@ x-api-key: <Tu valor de API_SECRET_KEY configurado en .env>
 ### Payload de la Petición:
 ```json
 {
-  "mensaje": "El auge de los agentes de software autónomos en 2026",
-  "session_id": "sesion-123"
+  "tema": "El auge de los agentes de software autónomos en 2026"
 }
 ```
 
-### Estructura de la Respuesta JSON (en el campo `respuesta`):
-La respuesta final se devuelve serializada como un string JSON en el campo `respuesta` de la respuesta de FastAPI, con la siguiente estructura exacta:
+### Estructura de la Respuesta JSON:
+La respuesta de FastAPI devuelve un objeto con la siguiente estructura:
+
+```json
+{
+  "tema": "El auge de los agentes de software autónomos en 2026",
+  "articulo": "{\"title\": \"...\", \"content\": \"...\", ...}",
+  "tiempo_ejecucion": "12s"
+}
+```
+
+La propiedad `articulo` contiene un string JSON válido con la siguiente estructura:
 
 ```json
 {
@@ -128,3 +143,5 @@ La respuesta final se devuelve serializada como un string JSON en el campo `resp
   "featured_image_alt": "Descripción corta en español de la imagen destacada para accesibilidad"
 }
 ```
+
+*Nota: Si el tema no es de tecnología, el campo `title` será "Tema no admitido", `status` será "draft", `categories` será [1] y `content` tendrá un mensaje aclarando el rechazo.*
