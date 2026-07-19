@@ -13,58 +13,65 @@ class ArticuloBlogger(BaseModel):
 
 class AppTasks:
     
-    def tarea_redactar_articulo(self, agente, tema_o_mensaje: str) -> Task:
+    def tarea_investigar_y_redactar(self, agente, tema_o_mensaje: str) -> Task:
         """
-        Tarea para redactar un artículo periodístico tecnológico basado en un tema específico,
-        seleccionando las categorías apropiadas de la lista disponible y estructurando la salida en JSON.
+        Tarea 1: Investigar tendencias recientes y generar el borrador estructurado del artículo.
         """
         description = f"""
-        Actúa como un periodista tecnológico Senior, analista de tendencias digitales y divulgador experto en Desarrollo de Software, Inteligencia Artificial, Ciberseguridad e Innovación Tecnológica. Tu misión es crear contenido de altísimo valor editorial, con enfoque periodístico profesional, altamente actualizado, optimizado para SEO y extremadamente fácil de leer.
+        Investiga tendencias tecnológicas actuales, noticias recientes del sector tecnológico, inteligencia artificial, desarrollo de software, programación, ciberseguridad o innovación digital asociadas a la siguiente solicitud: '{tema_o_mensaje}'.
 
-        OBJETIVO PRINCIPAL:
-        Generar EXACTAMENTE UN (1) artículo semanal sobre tendencias tecnológicas actuales, noticias recientes del sector tecnológico, inteligencia artificial, desarrollo de software, programación, innovación digital o ciberseguridad.
-        El tema/entrada a desarrollar es: '{tema_o_mensaje}'.
+        Debes crear un borrador inicial de altísimo valor editorial para un artículo.
 
-        CONTEXTO DE CATEGORÍAS:
-        Analiza cuidadosamente la siguiente lista de categorías disponibles en el blog y selecciona únicamente las que realmente correspondan con el tema del artículo.
-        IDs y Nombres:
+        REGLAS DE INVESTIGACIÓN Y ACTUALIDAD:
+        1. El borrador DEBE basarse en información ACTUAL y RECIENTE de este año (2026).
+        2. Prioriza temas candentes como IA generativa, ciberseguridad, DevOps, automatización, cloud computing u open source.
+        3. Incluye referencias temporales ("En 2026", "Recientemente", "Actualmente", etc.).
+        4. El borrador debe tener una introducción sólida, desarrollo lógico de ideas con subtítulos y una conclusión inicial.
+        5. Debe tener una extensión mínima de 500 palabras y estar formateado en HTML válido (usa solo <h2>, <p>, <ul>, <ol>, <strong>, <em>, <blockquote>). No insertes imágenes en el HTML.
+
+        SELECCIÓN DE CATEGORÍAS:
+        Analiza las categorías del blog y selecciona únicamente los IDs numéricos que correspondan al tema:
         25 - _highlights, 24 - _servicesonly, 13 - (P) - Aplicaciones Web, 14 - (P) - Ecommerce, 19 - aaPanel, 5 - Bases de Datos, 18 - Corporativo, 3 - Desarrollo Web, 4 - DevOps y Cloud, 9 - Educación y Tecnología, 16 - Finanzas, 6 - Frameworks y Librerías, 27 - Habilidades, 17 - Inmobiliaria, 21 - Mail, 22 - n8n, 10 - Noticias y Actualizaciones, 12 - projects, 8 - Proyectos y Casos Prácticos, 7 - Seguridad y Redes, 15 - Social, 23 - Tech Semanal, 11 - Tips y Snippets, 1 - Uncategorized, 20 - WebMail
 
-        REGLAS DE INVESTIGACIÓN Y ACTUALIDAD (MUY IMPORTANTE):
-        1. El artículo DEBE estar basado en información ACTUAL y RECIENTE.
-        2. Debes investigar tendencias, noticias o tecnologías vigentes utilizando información de la semana actual, el mes actual o el año actual (2026).
-        3. Prioriza noticias recientes relacionadas con: Inteligencia Artificial generativa, Desarrollo de software moderno, Programación, Cloud Computing, Ciberseguridad, Automatización, DevOps, Open Source, Big Data, Machine Learning, Startups tecnológicas, Innovación empresarial o Tecnología global.
-        4. El contenido debe sentirse moderno, relevante y alineado con la actualidad tecnológica mundial. Evita temas obsoletos o tecnologías desactualizadas.
-        5. Incluye referencias contextuales temporales como: “En 2026”, “Actualmente”, “En los últimos meses”, “Recientemente”, “Durante este año”.
-        6. El artículo debe mezclar: análisis tecnológico, contexto de negocio, impacto social o empresarial, aplicaciones reales y tendencias futuras.
-
-        REGLAS CRÍTICAS DE REDACCIÓN:
-        1. Escribe como un periodista tecnológico profesional de alto nivel.
-        2. El estilo debe ser: humano, natural, profesional, dinámico, claro, moderno.
-        3. El artículo debe tener: introducción sólida, desarrollo lógico, subtítulos claros, conclusión contundente.
-        4. Debe ser fácil de leer incluso para personas no técnicas. Evita lenguaje robótico o repetitivo. Usa storytelling periodístico cuando sea apropiado.
-        5. El contenido debe parecer escrito para un portal tecnológico premium.
-
-        REGLAS DE ESTRUCTURA HTML:
-        1. El contenido debe estar completamente en HTML válido en la propiedad 'content'.
-        2. Usa obligatoriamente: <h2> para secciones, <p> para párrafos, <ul> para enumeraciones, <ol> para rankings, pasos o procesos.
-        3. NO uses Markdown dentro de 'content'. NO insertes imágenes dentro del HTML.
-        4. El contenido de 'content' debe tener MÍNIMO 500 palabras.
-        5. Puedes usar también: <strong>, <em>, <blockquote>.
-
-        REGLAS SEO:
-        1. El título debe ser atractivo, moderno y optimizado para SEO.
-        2. El excerpt debe tener máximo 160 caracteres.
-        3. Incluye naturalmente keywords relacionadas con: IA, desarrollo, tecnología, programación, innovación, software. Evita keyword stuffing.
-
-        REGLAS DE IMAGEN Y ACCESIBILIDAD (MUY IMPORTANTE):
-        1. La propiedad `featured_image_prompt` DEBE estar escrita en INGLÉS. Esto mejora enormemente la calidad y precisión de la imagen generada.
-        2. La propiedad `featured_image_alt` DEBE estar escrita en ESPAÑOL. Debe ser una descripción corta y natural de la escena para accesibilidad (máximo 125 caracteres, descriptivo, natural, sin términos técnicos). No incluyas palabras clave de prompts como "cyberpunk style", "cinematic", "photorealistic", etc.
+        PROMPTS DE IMAGEN:
+        1. Diseña un 'featured_image_prompt' detallado y cinemático, escrito estrictamente en INGLÉS.
+        2. Diseña un 'featured_image_alt' descriptivo y natural en ESPAÑOL (máximo 125 caracteres), ideal para accesibilidad de WordPress.
         """
 
         return Task(
             description=description,
-            expected_output="Un único objeto JSON válido que representa el artículo completo.",
+            expected_output=(
+                "Un borrador estructurado del artículo que contenga: título propuesto, categorías seleccionadas, "
+                "contenido redactado en HTML (mínimo 500 palabras), prompt en inglés de la imagen y alt text en español."
+            ),
             agent=agente,
+        )
+
+    def tarea_humanizar_y_formatear(self, agente, tarea_borrador: Task) -> Task:
+        """
+        Tarea 2: Tomar el borrador del periodista, reescribirlo y humanizarlo para que no parezca IA,
+        manteniendo el HTML y estructurando la salida en el JSON final requerido.
+        """
+        description = f"""
+        Analiza el borrador del artículo generado en la tarea anterior. Tu objetivo es pulir la redacción, el título y el extracto para que el texto final suene completamente natural, humano y cercano, como si fuera una investigación o artículo escrito en primera persona o por un autor humano experto (autoría propia), y no por una IA.
+
+        REGLAS CRÍTICAS DE HUMANIZACIÓN:
+        1. Elimina modismos y clichés típicos de IA (por ejemplo: "En resumen", "En conclusión", "Es crucial", "El dinámico mundo", "A medida que...", transiciones excesivamente formales o repetitivas).
+        2. Simplifica palabras complejas u oraciones demasiado densas. Usa un lenguaje claro, directo y fluido que sea fácil de entender para cualquier persona, pero manteniendo el rigor profesional.
+        3. Escribe de manera que se sienta que el autor tiene experiencia de primera mano con lo que está describiendo.
+        4. Conserva el formato HTML en la propiedad 'content' (usando obligatoriamente <h2>, <p>, <ul>, <ol>, <strong>, <em>, <blockquote>) y asegúrate de que mantenga el mínimo de 500 palabras.
+        5. No insertes imágenes en el HTML.
+        6. Mantén el 'featured_image_prompt' en INGLÉS y el 'featured_image_alt' en ESPAÑOL tal y como vienen en el borrador (o mejóralos si es necesario respetando el idioma).
+        7. El extracto (excerpt) debe ser un resumen SEO muy natural de máximo 160 caracteres.
+
+        FORMATO DE RESPUESTA OBLIGATORIO:
+        Debes estructurar la salida exactamente en base al modelo Pydantic suministrado (ArticuloBlogger).
+        """
+
+        return Task(
+            description=description,
+            expected_output="Un objeto JSON válido estructurado según el modelo ArticuloBlogger, que represente el artículo totalmente humanizado y formateado.",
+            agent=agente,
+            context=[tarea_borrador],
             output_json=ArticuloBlogger
         )
