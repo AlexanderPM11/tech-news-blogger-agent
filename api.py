@@ -13,20 +13,7 @@ API_SECRET_KEY = settings.API_SECRET_KEY
 app = FastAPI(title="FastAPI CrewAI Technology Researcher API")
 
 
-class InvestigacionRequest(BaseModel):
-    tema: str
-
-    def obtener_tema(self) -> str:
-        if not self.tema or not self.tema.strip():
-            raise HTTPException(
-                status_code=422,
-                detail="Debes enviar un 'tema' para la investigación.",
-            )
-        return self.tema.strip()
-
-
 class InvestigacionResponse(BaseModel):
-    tema: str
     articulo: str
     tiempo_ejecucion: str
 
@@ -41,19 +28,18 @@ async def health():
     return {"status": "healthy"}
 
 
-def procesar_investigacion_sync(request: InvestigacionRequest, x_api_key: Optional[str]):
+def procesar_investigacion_sync(x_api_key: Optional[str]):
     # Verificar API Key si se ha configurado un Secret Key
     if API_SECRET_KEY and API_SECRET_KEY != "default-secret-key-change-me":
         if x_api_key != API_SECRET_KEY:
             raise HTTPException(status_code=403, detail="Acceso denegado: API Key inválida")
 
     start_time = time.time()
-    tema = request.obtener_tema()
 
     try:
-        # Ejecutar la tripulación del investigador
+        # Ejecutar la tripulación del investigador de forma autónoma
         crew = SimpleCrew()
-        respuesta_final = crew.procesar_solicitud(tema)
+        respuesta_final = crew.procesar_solicitud()
 
         # Calcular tiempo transcurrido
         duracion = time.time() - start_time
@@ -63,7 +49,6 @@ def procesar_investigacion_sync(request: InvestigacionRequest, x_api_key: Option
             tiempo_str = f"{int(duracion)}s"
 
         return InvestigacionResponse(
-            tema=tema,
             articulo=respuesta_final,
             tiempo_ejecucion=tiempo_str,
         )
@@ -71,22 +56,22 @@ def procesar_investigacion_sync(request: InvestigacionRequest, x_api_key: Option
     except HTTPException:
         raise
     except Exception as e:
-        print(f"[ERROR] Error procesando investigación: {str(e)}")
+        print(f"[ERROR] Error procesando investigación autónoma: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error interno: {str(e)}")
 
 
-async def procesar_investigacion(request: InvestigacionRequest, x_api_key: Optional[str]):
-    return await run_in_threadpool(procesar_investigacion_sync, request, x_api_key)
+async def procesar_investigacion(x_api_key: Optional[str]):
+    return await run_in_threadpool(procesar_investigacion_sync, x_api_key)
 
 
 @app.post("/investigar", response_model=InvestigacionResponse)
-async def investigar(request: InvestigacionRequest, x_api_key: Optional[str] = Header(None)):
-    return await procesar_investigacion(request, x_api_key)
+async def investigar(x_api_key: Optional[str] = Header(None)):
+    return await procesar_investigacion(x_api_key)
 
 
 @app.post("/api/investigar", response_model=InvestigacionResponse)
-async def api_investigar(request: InvestigacionRequest, x_api_key: Optional[str] = Header(None)):
-    return await procesar_investigacion(request, x_api_key)
+async def api_investigar(x_api_key: Optional[str] = Header(None)):
+    return await procesar_investigacion(x_api_key)
 
 
 if __name__ == "__main__":

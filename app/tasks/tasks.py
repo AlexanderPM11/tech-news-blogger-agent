@@ -3,45 +3,42 @@ from app.models.articulo import ArticuloBlogger
 
 class AppTasks:
     
-    def tarea_investigar_y_redactar(self, agente, tema_o_mensaje: str, categorias: str) -> Task:
+    def tarea_investigar_y_redactar(self, agente, categorias: str) -> Task:
         """
-        Tarea 1: Investigar tendencias recientes y generar el borrador estructurado del artículo.
+        Tarea 1: Investigar de forma autónoma tendencias recientes, seleccionar la de mayor relevancia
+        y redactar un borrador de artículo estructurado.
         """
         description = f"""
-        Investiga tendencias tecnológicas actuales, noticias recientes del sector tecnológico, inteligencia artificial, desarrollo de software, programación, ciberseguridad o innovación digital asociadas a la siguiente solicitud: '{tema_o_mensaje}'.
+        Identifica de forma autónoma las tendencias tecnológicas y de desarrollo de software más actuales y con mayor relevancia/impacto de esta semana (año 2026).
+        
+        Debes actuar como el responsable de seleccionar de manera completamente independiente el tema del artículo de esta semana, evaluando criterios como:
+        - Actualidad y frescura de la noticia.
+        - Popularidad y nivel de interés.
+        - Impacto en la industria del software.
+        - Utilidad práctica para programadores y profesionales de TI.
 
-        Debes crear un borrador inicial de altísimo valor editorial para un artículo.
+        Una vez que hayas seleccionado autónomamente el mejor tema del ámbito de tecnología (por ejemplo: Inteligencia Artificial, Agentes Autónomos, LLMs, Cloud Computing, DevOps, Ciberseguridad, etc.), realiza una investigación y redacta un borrador inicial de altísimo valor editorial.
 
-        FILTRADO DE TEMA NO TECNOLÓGICO (CRÍTICO):
-        Antes de investigar, analiza si el tema '{tema_o_mensaje}' pertenece al ámbito tecnológico, informático o de desarrollo de software.
-        Si el tema NO está relacionado con tecnología o informática (por ejemplo: cocina, recetas, deportes generales, moda, política general, etc.), debes detener la investigación y crear un borrador de rechazo con estos datos:
-        - Título: "Tema no admitido"
-        - Contenido: "<p>Este agente está especializado únicamente en temas relacionados con la tecnología, informática y desarrollo de software. Por favor, introduce un tema adecuado.</p>"
-        - Excerpt: "Error: Tema no tecnológico"
-        - Categorías: [1]
-        - Prompts de Imagen: "None" para prompt y "None" para alt text.
-
-        REGLAS DE INVESTIGACIÓN Y ACTUALIDAD (solo si el tema es tecnológico):
+        REGLAS DE INVESTIGACIÓN Y ACTUALIDAD:
         1. El borrador DEBE basarse en información ACTUAL y RECIENTE de este año (2026).
-        2. Prioriza temas candentes como IA generativa, ciberseguridad, DevOps, automatización, cloud computing u open source.
-        3. Incluye referencias temporales ("En 2026", "Recientemente", "Actualmente", etc.).
-        4. El borrador debe tener una introducción sólida, desarrollo lógico de ideas con subtítulos y una conclusión inicial.
-        5. Debe tener una extensión mínima de 500 palabras y estar formateado en HTML válido (usa solo <h2>, <p>, <ul>, <ol>, <strong>, <em>, <blockquote>). No insertes imágenes en el HTML.
+        2. Incluye referencias temporales ("En 2026", "Recientemente", "Actualmente", etc.).
+        3. El borrador debe tener una introducción sólida, explicación del tema, contexto, beneficios, casos de uso, ejemplos cuando sea posible, conclusiones y referencias utilizadas.
+        4. Debe tener una extensión mínima de 500 palabras y estar formateado en HTML válido (usa solo <h2>, <p>, <ul>, <ol>, <strong>, <em>, <blockquote>). No insertes imágenes en el HTML.
 
-        SELECCIÓN DE CATEGORÍAS (solo si el tema es tecnológico):
-        Analiza las categorías del blog y selecciona únicamente los IDs numéricos que correspondan al tema:
+        SELECCIÓN DE CATEGORÍAS:
+        Analiza las categorías del blog y selecciona únicamente los IDs numéricos que correspondan al tema elegido:
         {categorias}
 
-        PROMPTS DE IMAGEN (solo si el tema es tecnológico):
-        1. Diseña un 'featured_image_prompt' detallado y cinemático, escrito estrictamente en INGLÉS.
+        PROMPTS DE IMAGEN:
+        1. Diseña un 'featured_image_prompt' detallado y cinemático para la tendencia seleccionada, escrito estrictamente en INGLÉS.
         2. Diseña un 'featured_image_alt' descriptivo y natural en ESPAÑOL (máximo 125 caracteres), ideal para accesibilidad de WordPress.
         """
 
         return Task(
             description=description,
             expected_output=(
-                "Un borrador estructurado del artículo (o un borrador de rechazo si el tema no es tecnológico) "
-                "que contenga: título propuesto, categorías seleccionadas, contenido redactado en HTML (mínimo 500 palabras), "
+                "Un borrador estructurado del artículo tecnológico seleccionado autónomamente que contenga: "
+                "título propuesto, categorías seleccionadas, contenido redactado en HTML (mínimo 500 palabras), "
                 "prompt en inglés de la imagen y alt text en español."
             ),
             agent=agente,
@@ -53,21 +50,9 @@ class AppTasks:
         manteniendo el HTML y estructurando la salida en el JSON final requerido.
         """
         description = f"""
-        Analiza el borrador del artículo generado en la tarea anterior. 
+        Analiza el borrador del artículo de tendencia tecnológica generado en la tarea anterior. 
         
-        SI EL BORRADOR ES DE RECHAZO (Título es "Tema no admitido"):
-        Simplemente formatea y devuelve los datos exactamente en base al modelo Pydantic suministrado (ArticuloBlogger) con los siguientes valores:
-        - title: "Tema no admitido"
-        - content: "<p>Este agente está especializado únicamente en temas relacionados con la tecnología, informática y desarrollo de software. Por favor, introduce un tema adecuado.</p>"
-        - excerpt: "Error: Tema no tecnológico"
-        - status: "draft"
-        - categories: [1]
-        - featured_image_prompt: "None"
-        - featured_image_alt: "None"
-        No intentes inventar o redactar un artículo de tecnología si el borrador es de rechazo.
-
-        SI EL BORRADOR ES DE UN TEMA TECNOLÓGICO VÁLIDO:
-        Tu objetivo es pulir la redacción, el título y el extracto para que el texto final suene completamente natural, humano y cercano, como si fuera una investigación o artículo escrito en primera persona o por un autor humano experto (autoría propia), y no por una IA.
+        Tu objetivo es pulir la redacción, el título y el extracto (excerpt) para que el texto final suene completamente natural, humano y cercano, como si fuera una investigación o artículo escrito en primera persona o por un autor humano experto (autoría propia), y no por una IA.
 
         REGLAS CRÍTICAS DE HUMANIZACIÓN:
         1. Elimina modismos y clichés típicos de IA (por ejemplo: "En resumen", "En conclusión", "Es crucial", "El dinámico mundo", "A medida que...", transiciones excesivamente formales o repetitivas).

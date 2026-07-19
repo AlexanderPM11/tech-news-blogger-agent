@@ -1,39 +1,25 @@
 from app.crews.crew import SimpleCrew
 
-def iniciar_investigador_interactivo():
+def ejecutar_investigacion_autonoma():
     print("="*60)
-    print(" 🚀 INICIANDO AGENTE INVESTIGADOR DE TECNOLOGÍA (CLI)")
-    print("    (Escribe 'salir', 'exit' o 'quit' para terminar)")
+    print(" 🚀 EJECUTANDO AGENTE AUTÓNOMO DE INVESTIGACIÓN TECNOLÓGICA (CLI)")
     print("="*60)
+    print("\n🔍 Detectando tendencias, seleccionando tema y redactando contenido (Por favor espera)...\n")
 
     # 1. Instanciamos la tripulación
     crew = SimpleCrew()
     
-    # 2. Bucle del investigador de consola
-    while True:
-        try:
-            tema_investigacion = input("\n📝 Tema a investigar: ")
-        except (KeyboardInterrupt, EOFError):
-            print("\n[👋] Apagando el investigador tecnológico. ¡Hasta luego!")
-            break
-            
-        if tema_investigacion.lower().strip() in ['salir', 'exit', 'quit']:
-            print("\n[👋] Apagando el investigador tecnológico. ¡Hasta luego!")
-            break
-
-        if not tema_investigacion.strip():
-            continue
-
-        print("\n🔍 Investigando y redactando contenido (Por favor espera)...\n")
-        
-        # Enviamos el tema al agente
-        respuesta = crew.procesar_solicitud(tema_investigacion)
+    # 2. Ejecutar el flujo autónomo
+    try:
+        respuesta = crew.procesar_solicitud()
         
         # Imprimir respuesta en consola
-        print("\n========================================")
-        print("         ARTÍCULO / INVESTIGACIÓN       ")
-        print("========================================")
+        print("\n========================================================")
+        print("      ARTÍCULO / INVESTIGACIÓN GENERADA AUTÓNOMAMENTE   ")
+        print("========================================================")
         print(f"🤖 Resultado:\n{respuesta}\n")
+    except Exception as e:
+        print(f"\n[ERROR] Ocurrió un fallo en la ejecución autónoma: {e}")
 
 if __name__ == "__main__":
-    iniciar_investigador_interactivo()
+    ejecutar_investigacion_autonoma()

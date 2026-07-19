@@ -8,8 +8,8 @@ class SimpleCrew:
         self.agentes = AppAgents()
         self.tareas = AppTasks()
 
-    def procesar_solicitud(self, mensaje: str) -> str:
-        """Procesa una solicitud utilizando un flujo de dos agentes: redacción y edición/humanización."""
+    def procesar_solicitud(self) -> str:
+        """Procesa el flujo autónomo de investigación y redacción tecnológica."""
         # 1. Obtener agentes
         periodista = self.agentes.agente_periodista()
         editor = self.agentes.agente_editor()
@@ -18,7 +18,7 @@ class SimpleCrew:
         categorias = obtener_categorias_wordpress()
         
         # 3. Obtener tareas
-        borrador_task = self.tareas.tarea_investigar_y_redactar(periodista, mensaje, categorias)
+        borrador_task = self.tareas.tarea_investigar_y_redactar(periodista, categorias)
         edicion_task = self.tareas.tarea_humanizar_y_formatear(editor, borrador_task)
         
         # 4. Inicializar tripulación (Crew)

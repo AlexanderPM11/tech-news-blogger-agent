@@ -1,18 +1,18 @@
-# Plantilla de Agente Investigador de Tecnología con FastAPI
+# Plantilla de Agente Autónomo de Investigación Tecnológica con FastAPI
 
-Esta plantilla proporciona una estructura modular, desacoplada y limpia para un **Agente Investigador de Tecnología** automatizado basado en **CrewAI** y **FastAPI**. 
+Esta plantilla proporciona una estructura modular, desacoplada y limpia para un **Agente Autónomo de Investigación Tecnológica** basado en **CrewAI** y **FastAPI**. 
 
-El agente está diseñado para recibir un tema o palabra clave de tecnología, investigar y redactar artículos técnicos de alta calidad con salida JSON estructurada y pulida por un editor humano. Adicionalmente, cuenta con un filtro para rechazar solicitudes que no pertenezcan al ámbito tecnológico e informático.
+El agente está diseñado para iniciarse de forma 100% autónoma. No espera preguntas del usuario ni requiere ingresar un tema específico. Al invocarse, el agente investiga tendencias actuales, selecciona el tema tecnológico de mayor impacto, profundiza en su investigación y genera artículos técnicos en un formato JSON estructurado listo para ser publicado en plataformas como WordPress (a través de automatizaciones como n8n).
 
 ## Características Principales
 
 - **Flujo Especializado de Doble Agente**:
-  - **Periodista Investigador (`agente_periodista`)**: Evalúa si el tema propuesto es de tecnología/informática. Si lo es, investiga las tendencias más recientes de este año (2026), selecciona categorías del blog de WordPress y crea un borrador inicial en HTML. Si el tema no es de tecnología, detiene la ejecución y genera una respuesta de rechazo estructurada.
+  - **Periodista Investigador (`agente_periodista`)**: Identifica autónomamente las tendencias del desarrollo de software y tecnología del año actual (2026). Evalúa popularidad, actualidad e impacto para elegir el mejor tema del sector tecnológico, e investiga y redacta el borrador en formato HTML.
   - **Editor Jefe y Humanizador (`agente_editor`)**: Pule el borrador, elimina modismos y clichés de IA ("En conclusión", "Es crucial", etc.), optimiza el SEO y reescribe el texto para que tenga un tono cercano, natural y de autoría humana propia.
 - **Salida JSON Estructurada Garantizada**: Utiliza validación estricta con Pydantic (`ArticuloBlogger`) garantizando que la salida sea un objeto JSON parseable.
 - **Configuración Dinámica de LLMs**: Soporte integrado para OpenAI, Google Gemini, NVIDIA NIM y Ollama (local).
 - **Entrada Doble**:
-  - Interfaz de consola interactiva (CLI) para pruebas y depuración local rápida (`main.py`).
+  - Interfaz de consola (`main.py`) que ejecuta inmediatamente el proceso autónomo de investigación.
   - API FastAPI lista para producción (`api.py`), compatible con webhooks y herramientas de automatización como **n8n**.
 
 ---
@@ -43,7 +43,7 @@ tech-news-blogger-agent/
 ├── api.py                      # Servidor FastAPI
 ├── Dockerfile                  # Configuración de contenedor Docker
 ├── docker-compose.yml          # Orquestación local por Docker Compose
-├── main.py                     # Cliente interactivo de consola (CLI)
+├── main.py                     # Cliente de consola de ejecución autónoma (CLI)
 ├── README.md                   # Documentación del proyecto
 └── requirements.txt            # Dependencias de Python
 ```
@@ -82,12 +82,12 @@ Completa tu proveedor preferido en `MODEL_PROVIDER` (`openai`, `gemini`, `nvidia
 
 ## Cómo Ejecutar el Proyecto
 
-### Modo Consola Interactivo (CLI)
-Ideal para verificar el comportamiento de tus agentes y la interacción entre ellos:
+### Modo Consola (CLI)
+Ejecuta el script para iniciar la investigación y redacción de manera autónoma de inmediato:
 ```bash
 python main.py
 ```
-Introduce un tema para el artículo (ej: *"Arquitectura de microservicios en 2026"* o un tema no tecnológico para verificar el rechazo) y observa el flujo de trabajo de investigación y edición.
+El agente buscará tendencias, seleccionará la más relevante, generará el artículo e imprimirá el JSON resultante en pantalla.
 
 ### Modo API (FastAPI)
 Ejecuta el servidor web local:
@@ -95,13 +95,13 @@ Ejecuta el servidor web local:
 python api.py
 ```
 El endpoint de salud estará disponible en [http://localhost:8000/health](http://localhost:8000/health).
-La interfaz interactiva de Swagger UI para probar los endpoints se encuentra en [http://localhost:8000/docs](http://localhost:8000/docs).
+La interfaz interactiva de Swagger UI se encuentra en [http://localhost:8000/docs](http://localhost:8000/docs).
 
 ---
 
 ## Integración con la API y Formato de Respuesta
 
-Para solicitar la generación de un artículo, realiza una petición POST a:
+Para solicitar la generación de un artículo de manera autónoma, realiza una petición POST sin cuerpo a:
 ```text
 POST /investigar
 ```
@@ -112,25 +112,17 @@ Content-Type: application/json
 x-api-key: <Tu valor de API_SECRET_KEY configurado en .env>
 ```
 
-### Payload de la Petición:
-```json
-{
-  "tema": "El auge de los agentes de software autónomos en 2026"
-}
-```
-
 ### Estructura de la Respuesta JSON:
-La respuesta de FastAPI devuelve un objeto con la siguiente estructura:
+La respuesta de FastAPI devuelve un objeto con el tiempo de ejecución y el JSON del artículo en el campo `articulo`:
 
 ```json
 {
-  "tema": "El auge de los agentes de software autónomos en 2026",
   "articulo": "{\"title\": \"...\", \"content\": \"...\", ...}",
   "tiempo_ejecucion": "12s"
 }
 ```
 
-La propiedad `articulo` contiene un string JSON válido con la siguiente estructura:
+La propiedad `articulo` contiene el string JSON de salida del agente con la siguiente estructura:
 
 ```json
 {
@@ -143,5 +135,3 @@ La propiedad `articulo` contiene un string JSON válido con la siguiente estruct
   "featured_image_alt": "Descripción corta en español de la imagen destacada para accesibilidad"
 }
 ```
-
-*Nota: Si el tema no es de tecnología, el campo `title` será "Tema no admitido", `status` será "draft", `categories` será [1] y `content` tendrá un mensaje aclarando el rechazo.*
