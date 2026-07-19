@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  agentic-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: agentic-crew-api
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      # --- Configuración LLM ---
+      - MODEL_PROVIDER=${MODEL_PROVIDER}
+      - OLLAMA_URL=http://host.docker.internal:11434
+      - OLLAMA_MODEL=${OLLAMA_MODEL}
+      - NVIDIA_API_KEY=${NVIDIA_API_KEY}
+      - NVIDIA_MODEL=${NVIDIA_MODEL}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_MODEL=${OPENAI_MODEL}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GEMINI_MODEL=${GEMINI_MODEL}
+      
+      # --- Base de Datos e Historial ---
+      - DATABASE_URL=${DATABASE_URL}
+      
+      # --- Seguridad API ---
+      - API_SECRET_KEY=${API_SECRET_KEY}
+
+      # --- Personalización de Herramientas (Ejemplos) ---
+      # Añadir variables requeridas por herramientas externas aquí
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

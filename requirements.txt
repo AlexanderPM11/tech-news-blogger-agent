@@ -1,0 +1,15 @@
+crewai[google-genai]
+crewai-tools
+fastapi
+uvicorn
+requests
+python-dotenv
+langchain-community
+langchain-nvidia-ai-endpoints
+langchain-google-genai
+google-generativeai
+litellm
+pydantic>=2.0.0
+psycopg2-binary
+beautifulsoup4
+pydantic-settings
