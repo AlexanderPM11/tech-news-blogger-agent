@@ -29,12 +29,23 @@ class SimpleCrew:
             verbose=True
         )
         
-        # 5. Ejecutar y retornar resultado
+        # 5. Ejecutar y retornar resultado midiendo el tiempo
+        import time
+        start_time = time.time()
         resultado = crew.kickoff()
+        duracion = time.time() - start_time
         
-        # Retornar como JSON string para mantener compatibilidad
+        # Formatear duración de manera legible
+        if duracion >= 60:
+            tiempo_str = f"{int(duracion // 60)}m {int(duracion % 60)}s"
+        else:
+            tiempo_str = f"{int(duracion)}s"
+        
+        # Retornar como JSON string inyectando la métrica de tiempo
         if resultado.json:
             import json
-            return json.dumps(resultado.json, ensure_ascii=False)
+            articulo_dict = dict(resultado.json)
+            articulo_dict["tiempo_ejecucion"] = tiempo_str
+            return json.dumps(articulo_dict, ensure_ascii=False)
             
         return str(resultado).strip()
