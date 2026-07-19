@@ -31,6 +31,9 @@ class Settings(BaseSettings):
     # --- Agrega aquí tus variables para APIs externas o herramientas ---
     # EJEMPLO_API_KEY: Optional[str] = None
 
+    # --- WordPress ---
+    WORDPRESS_CATEGORIES_URL: str = "https://blog.apolanco.com/wp-json/wp/v2/categories"
+
 
 @lru_cache
 def get_settings() -> Settings:

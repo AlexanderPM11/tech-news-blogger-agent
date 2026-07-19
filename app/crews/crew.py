@@ -1,6 +1,7 @@
 from crewai import Crew, Process
 from app.agents.agents import AppAgents
 from app.tasks.tasks import AppTasks
+from app.services.wordpress import obtener_categorias_wordpress
 
 class SimpleCrew:
     def __init__(self):
@@ -13,11 +14,14 @@ class SimpleCrew:
         periodista = self.agentes.agente_periodista()
         editor = self.agentes.agente_editor()
         
-        # 2. Obtener tareas
-        borrador_task = self.tareas.tarea_investigar_y_redactar(periodista, mensaje)
+        # 2. Obtener categorías dinámicas
+        categorias = obtener_categorias_wordpress()
+        
+        # 3. Obtener tareas
+        borrador_task = self.tareas.tarea_investigar_y_redactar(periodista, mensaje, categorias)
         edicion_task = self.tareas.tarea_humanizar_y_formatear(editor, borrador_task)
         
-        # 3. Inicializar tripulación (Crew)
+        # 4. Inicializar tripulación (Crew)
         crew = Crew(
             agents=[periodista, editor],
             tasks=[borrador_task, edicion_task],
@@ -25,7 +29,7 @@ class SimpleCrew:
             verbose=True
         )
         
-        # 4. Ejecutar y retornar resultado
+        # 5. Ejecutar y retornar resultado
         resultado = crew.kickoff()
         
         # Retornar como JSON string para mantener compatibilidad
